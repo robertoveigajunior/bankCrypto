@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const BASE_URL = 'https://api.binance.com/api/v3';
 
-export const fetchPrice = async (symbol) => {
+export const fetchPrice = async (symbol: string): Promise<number> => {
   try {
     // Binance API usually expects symbols like BTCUSDT
     const response = await axios.get(`${BASE_URL}/ticker/price`, {
@@ -15,7 +15,12 @@ export const fetchPrice = async (symbol) => {
   }
 };
 
-export const fetchHistory = async (symbol, interval = '1d', limit = 30) => {
+interface CandleData {
+  time: number;
+  price: number;
+}
+
+export const fetchHistory = async (symbol: string, interval: string = '1d', limit: number = 30): Promise<CandleData[]> => {
   try {
     const response = await axios.get(`${BASE_URL}/klines`, {
       params: {
@@ -25,7 +30,8 @@ export const fetchHistory = async (symbol, interval = '1d', limit = 30) => {
       }
     });
     // Response format: [ [open time, open, high, low, close, volume, ...], ... ]
-    return response.data.map(candle => ({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return response.data.map((candle: any) => ({
       time: candle[0],
       price: parseFloat(candle[4]) // Close price
     }));

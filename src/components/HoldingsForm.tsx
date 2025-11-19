@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, FormEvent } from 'react';
 import { usePortfolio } from '../context/PortfolioContext';
 
-const HoldingsForm = () => {
+const HoldingsForm: React.FC = () => {
     const { addHolding, holdings, removeHolding } = usePortfolio();
-    const [symbol, setSymbol] = useState('BTC');
-    const [quantity, setQuantity] = useState('');
+    const [symbol, setSymbol] = useState<string>('BTC');
+    const [quantity, setQuantity] = useState<string>('');
 
-    const handleSubmit = (e) => {
+    const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
         if (symbol && quantity) {
             addHolding(symbol.toUpperCase(), quantity);

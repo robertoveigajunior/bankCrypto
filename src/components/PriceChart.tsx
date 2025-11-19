@@ -8,7 +8,9 @@ import {
     Title,
     Tooltip,
     Legend,
-    Filler
+    Filler,
+    ChartData,
+    ChartOptions
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import { fetchHistory } from '../services/api';
@@ -24,9 +26,19 @@ ChartJS.register(
     Filler
 );
 
-const PriceChart = ({ symbol, holdings = [] }) => {
-    const [timeframe, setTimeframe] = useState('1M'); // 1W or 1M
-    const [chartData, setChartData] = useState(null);
+interface Holding {
+    symbol: string;
+    quantity: number | string;
+}
+
+interface PriceChartProps {
+    symbol: string;
+    holdings?: Holding[];
+}
+
+const PriceChart: React.FC<PriceChartProps> = ({ holdings = [] }) => {
+    const [timeframe, setTimeframe] = useState<'1W' | '1M'>('1M'); // 1W or 1M
+    const [chartData, setChartData] = useState<ChartData<'line'> | null>(null);
 
     useEffect(() => {
         const getData = async () => {
@@ -90,7 +102,7 @@ const PriceChart = ({ symbol, holdings = [] }) => {
         getData();
     }, [holdings, timeframe]);
 
-    const options = {
+    const options: ChartOptions<'line'> = {
         responsive: true,
         plugins: {
             legend: {

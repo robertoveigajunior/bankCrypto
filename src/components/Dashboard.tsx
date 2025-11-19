@@ -4,11 +4,11 @@ import { fetchPrice } from '../services/api';
 import PriceChart from './PriceChart';
 import HoldingsForm from './HoldingsForm';
 
-const Dashboard = () => {
+const Dashboard: React.FC = () => {
     const { holdings, currency, setCurrency } = usePortfolio();
-    const [btcPrice, setBtcPrice] = useState(0);
-    const [portfolioValue, setPortfolioValue] = useState(0);
-    const [loading, setLoading] = useState(true);
+    const [btcPrice, setBtcPrice] = useState<number>(0);
+    const [portfolioValue, setPortfolioValue] = useState<number>(0);
+    const [loading, setLoading] = useState<boolean>(true);
 
     // Exchange rate (mocked for simplicity if not fetching, but we can try to fetch or just use a fixed rate for demo)
     // In a real app, we'd fetch USD/BRL rate. Let's assume 1 USD = 5.80 BRL for now or fetch it if possible.
@@ -21,14 +21,21 @@ const Dashboard = () => {
                 const price = await fetchPrice('BTC');
                 setBtcPrice(price);
 
+                // BUG FIX: Explicitly handle empty holdings
+                if (holdings.length === 0) {
+                    setPortfolioValue(0);
+                    setLoading(false);
+                    return;
+                }
+
                 // Calculate Portfolio Value
                 // Note: This is a simplified calculation assuming all holdings have a USDT pair
                 // and we fetch them one by one. For a large portfolio, we'd need batch requests.
                 let total = 0;
                 for (const holding of holdings) {
-                    if (holding.quantity > 0) {
+                    if (parseFloat(holding.quantity as string) > 0) {
                         const p = await fetchPrice(holding.symbol);
-                        total += p * holding.quantity;
+                        total += p * parseFloat(holding.quantity as string);
                     }
                 }
                 setPortfolioValue(total);
@@ -44,7 +51,7 @@ const Dashboard = () => {
         return () => clearInterval(interval);
     }, [holdings]);
 
-    const formatCurrency = (value) => {
+    const formatCurrency = (value: number) => {
         const val = currency === 'BRL' ? value * USD_BRL_RATE : value;
         return new Intl.NumberFormat(currency === 'BRL' ? 'pt-BR' : 'en-US', {
             style: 'currency',
