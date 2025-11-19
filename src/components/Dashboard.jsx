@@ -86,7 +86,7 @@ const Dashboard = () => {
 
                 <div className="content-grid">
                     <div className="chart-section">
-                        <PriceChart symbol="BTC" />
+                        <PriceChart symbol="BTC" holdings={holdings} />
                     </div>
                     <div className="holdings-section">
                         <HoldingsForm />

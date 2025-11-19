@@ -24,51 +24,78 @@ ChartJS.register(
     Filler
 );
 
-const PriceChart = ({ symbol }) => {
+const PriceChart = ({ symbol, holdings = [] }) => {
     const [timeframe, setTimeframe] = useState('1M'); // 1W or 1M
     const [chartData, setChartData] = useState(null);
 
     useEffect(() => {
         const getData = async () => {
             const interval = timeframe === '1W' ? '4h' : '1d';
-            const limit = timeframe === '1W' ? 42 : 30; // 7 days * 6 (4h candles) = 42
+            const limit = timeframe === '1W' ? 42 : 30;
 
             try {
-                const data = await fetchHistory(symbol, interval, limit);
+                // Always fetch BTC
+                const btcData = await fetchHistory('BTC', interval, limit);
 
-                setChartData({
-                    labels: data.map(d => {
-                        const date = new Date(d.time);
-                        return timeframe === '1W'
-                            ? date.toLocaleDateString() + ' ' + date.getHours() + ':00'
-                            : date.toLocaleDateString();
-                    }),
-                    datasets: [
-                        {
-                            label: `${symbol} Price (USDT)`,
-                            data: data.map(d => d.price),
-                            borderColor: '#00ff88',
-                            backgroundColor: 'rgba(0, 255, 136, 0.1)',
+                // Fetch others
+                const otherSymbols = [...new Set(holdings.map(h => h.symbol).filter(s => s !== 'BTC'))];
+                const otherDataPromises = otherSymbols.map(s => fetchHistory(s, interval, limit).then(data => ({ symbol: s, data })));
+                const othersData = await Promise.all(otherDataPromises);
+
+                const labels = btcData.map(d => {
+                    const date = new Date(d.time);
+                    return timeframe === '1W'
+                        ? date.toLocaleDateString() + ' ' + date.getHours() + ':00'
+                        : date.toLocaleDateString();
+                });
+
+                const datasets = [
+                    {
+                        label: 'BTC Price (USDT)',
+                        data: btcData.map(d => d.price),
+                        borderColor: '#00ff88',
+                        backgroundColor: 'rgba(0, 255, 136, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 0,
+                        pointHoverRadius: 6,
+                        order: 1,
+                        yAxisID: 'y',
+                    },
+                    ...othersData.map((item, index) => {
+                        const colors = ['#0088ff', '#ff0088', '#ffff00', '#ff8800'];
+                        const color = colors[index % colors.length];
+                        return {
+                            label: `${item.symbol} Price (USDT)`,
+                            data: item.data.map(d => d.price),
+                            borderColor: color,
+                            backgroundColor: 'transparent',
                             tension: 0.4,
-                            fill: true,
+                            fill: false,
                             pointRadius: 0,
                             pointHoverRadius: 6,
-                        },
-                    ],
-                });
+                            borderDash: [5, 5],
+                            order: 2,
+                            yAxisID: 'y1', // Use secondary axis for others to handle scale differences
+                        };
+                    })
+                ];
+
+                setChartData({ labels, datasets });
             } catch (error) {
                 console.error("Failed to load chart data", error);
             }
         };
 
         getData();
-    }, [symbol, timeframe]);
+    }, [holdings, timeframe]);
 
     const options = {
         responsive: true,
         plugins: {
             legend: {
-                display: false,
+                display: true,
+                labels: { color: '#ccc' }
             },
             tooltip: {
                 mode: 'index',
@@ -82,24 +109,22 @@ const PriceChart = ({ symbol }) => {
         },
         scales: {
             x: {
-                grid: {
-                    display: false,
-                    drawBorder: false,
-                },
-                ticks: {
-                    color: '#666',
-                    maxTicksLimit: 7,
-                }
+                grid: { display: false, drawBorder: false },
+                ticks: { color: '#666', maxTicksLimit: 7 }
             },
             y: {
-                grid: {
-                    color: 'rgba(255, 255, 255, 0.05)',
-                    drawBorder: false,
-                },
-                ticks: {
-                    color: '#666',
-                    callback: (value) => '$' + value.toLocaleString()
-                }
+                type: 'linear',
+                display: true,
+                position: 'left',
+                grid: { color: 'rgba(255, 255, 255, 0.05)', drawBorder: false },
+                ticks: { color: '#00ff88', callback: (value) => '$' + value.toLocaleString() }
+            },
+            y1: {
+                type: 'linear',
+                display: true,
+                position: 'right',
+                grid: { drawOnChartArea: false }, // only want the grid lines for one axis to show up
+                ticks: { color: '#0088ff', callback: (value) => '$' + value.toLocaleString() }
             }
         },
         interaction: {
