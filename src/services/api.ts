@@ -40,3 +40,15 @@ export const fetchHistory = async (symbol: string, interval: string = '1d', limi
     throw error;
   }
 };
+
+export const fetch24hChange = async (symbol: string): Promise<number> => {
+  try {
+    const response = await axios.get(`${BASE_URL}/ticker/24hr`, {
+      params: { symbol: symbol.toUpperCase() + 'USDT' }
+    });
+    return parseFloat(response.data.priceChangePercent);
+  } catch (error) {
+    console.error(`Error fetching 24h change for ${symbol}:`, error);
+    throw error;
+  }
+};

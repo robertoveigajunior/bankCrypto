@@ -32,11 +32,12 @@ interface Holding {
 }
 
 interface PriceChartProps {
-    symbol: string;
+    symbol?: string;
     holdings?: Holding[];
+    type?: 'asset' | 'portfolio';
 }
 
-const PriceChart: React.FC<PriceChartProps> = ({ holdings = [] }) => {
+const PriceChart: React.FC<PriceChartProps> = ({ symbol = 'BTC', holdings = [], type = 'asset' }) => {
     const [timeframe, setTimeframe] = useState<'1W' | '1M'>('1M'); // 1W or 1M
     const [chartData, setChartData] = useState<ChartData<'line'> | null>(null);
 
@@ -46,13 +47,8 @@ const PriceChart: React.FC<PriceChartProps> = ({ holdings = [] }) => {
             const limit = timeframe === '1W' ? 42 : 30;
 
             try {
-                // Always fetch BTC
+                // Always fetch BTC to get timestamps/labels
                 const btcData = await fetchHistory('BTC', interval, limit);
-
-                // Fetch others
-                const otherSymbols = [...new Set(holdings.map(h => h.symbol).filter(s => s !== 'BTC'))];
-                const otherDataPromises = otherSymbols.map(s => fetchHistory(s, interval, limit).then(data => ({ symbol: s, data })));
-                const othersData = await Promise.all(otherDataPromises);
 
                 const labels = btcData.map(d => {
                     const date = new Date(d.time);
@@ -61,46 +57,100 @@ const PriceChart: React.FC<PriceChartProps> = ({ holdings = [] }) => {
                         : date.toLocaleDateString();
                 });
 
-                const datasets = [
-                    {
-                        label: 'BTC Price (USDT)',
-                        data: btcData.map(d => d.price),
-                        borderColor: '#00ff88',
-                        backgroundColor: 'rgba(0, 255, 136, 0.1)',
-                        tension: 0.4,
-                        fill: true,
-                        pointRadius: 0,
-                        pointHoverRadius: 6,
-                        order: 1,
-                        yAxisID: 'y',
-                    },
-                    ...othersData.map((item, index) => {
-                        const colors = ['#0088ff', '#ff0088', '#ffff00', '#ff8800'];
-                        const color = colors[index % colors.length];
-                        return {
-                            label: `${item.symbol} Price (USDT)`,
-                            data: item.data.map(d => d.price),
-                            borderColor: color,
-                            backgroundColor: 'transparent',
+                if (type === 'portfolio') {
+                    if (holdings.length === 0) {
+                        setChartData({
+                            labels,
+                            datasets: [{
+                                label: 'Portfolio Value (USD)',
+                                data: new Array(labels.length).fill(0),
+                                borderColor: '#00ff88',
+                                backgroundColor: 'rgba(0, 255, 136, 0.1)',
+                                tension: 0.4,
+                                fill: true,
+                            }]
+                        });
+                        return;
+                    }
+
+                    const uniqueSymbols = [...new Set(holdings.map(h => h.symbol))];
+                    const historyPromises = uniqueSymbols.map(s => fetchHistory(s, interval, limit).then(data => ({ symbol: s, data })));
+                    const histories = await Promise.all(historyPromises);
+
+                    // Calculate total value for each timestamp
+                    // We assume histories are aligned by index (simplified for this demo)
+                    // A more robust solution would match by timestamp
+                    const portfolioHistory = btcData.map((_, index) => {
+                        let total = 0;
+                        holdings.forEach(h => {
+                            const history = histories.find(hist => hist.symbol === h.symbol);
+                            if (history && history.data[index]) {
+                                total += history.data[index].price * parseFloat(h.quantity as string);
+                            }
+                        });
+                        return total;
+                    });
+
+                    setChartData({
+                        labels,
+                        datasets: [{
+                            label: 'Total Portfolio Value (USD)',
+                            data: portfolioHistory,
+                            borderColor: '#00ff88',
+                            backgroundColor: 'rgba(0, 255, 136, 0.1)',
                             tension: 0.4,
-                            fill: false,
+                            fill: true,
                             pointRadius: 0,
                             pointHoverRadius: 6,
-                            borderDash: [5, 5],
-                            order: 2,
-                            yAxisID: 'y1', // Use secondary axis for others to handle scale differences
-                        };
-                    })
-                ];
+                        }]
+                    });
 
-                setChartData({ labels, datasets });
+                } else {
+                    // Asset Mode (Existing Logic)
+                    const otherSymbols = [...new Set(holdings.map(h => h.symbol).filter(s => s !== 'BTC'))];
+                    const otherDataPromises = otherSymbols.map(s => fetchHistory(s, interval, limit).then(data => ({ symbol: s, data })));
+                    const othersData = await Promise.all(otherDataPromises);
+
+                    const datasets = [
+                        {
+                            label: 'BTC Price (USDT)',
+                            data: btcData.map(d => d.price),
+                            borderColor: '#00ff88',
+                            backgroundColor: 'rgba(0, 255, 136, 0.1)',
+                            tension: 0.4,
+                            fill: true,
+                            pointRadius: 0,
+                            pointHoverRadius: 6,
+                            order: 1,
+                            yAxisID: 'y',
+                        },
+                        ...othersData.map((item, index) => {
+                            const colors = ['#0088ff', '#ff0088', '#ffff00', '#ff8800'];
+                            const color = colors[index % colors.length];
+                            return {
+                                label: `${item.symbol} Price (USDT)`,
+                                data: item.data.map(d => d.price),
+                                borderColor: color,
+                                backgroundColor: 'transparent',
+                                tension: 0.4,
+                                fill: false,
+                                pointRadius: 0,
+                                pointHoverRadius: 6,
+                                borderDash: [5, 5],
+                                order: 2,
+                                yAxisID: 'y1',
+                            };
+                        })
+                    ];
+                    setChartData({ labels, datasets });
+                }
             } catch (error) {
                 console.error("Failed to load chart data", error);
             }
         };
 
         getData();
-    }, [holdings, timeframe]);
+    }, [holdings, timeframe, type, symbol]);
 
     const options: ChartOptions<'line'> = {
         responsive: true,
@@ -121,21 +171,21 @@ const PriceChart: React.FC<PriceChartProps> = ({ holdings = [] }) => {
         },
         scales: {
             x: {
-                grid: { display: false, drawBorder: false },
+                grid: { display: false },
                 ticks: { color: '#666', maxTicksLimit: 7 }
             },
             y: {
                 type: 'linear',
                 display: true,
                 position: 'left',
-                grid: { color: 'rgba(255, 255, 255, 0.05)', drawBorder: false },
+                grid: { color: 'rgba(255, 255, 255, 0.05)' },
                 ticks: { color: '#00ff88', callback: (value) => '$' + value.toLocaleString() }
             },
             y1: {
                 type: 'linear',
-                display: true,
+                display: type === 'asset' && holdings.some(h => h.symbol !== 'BTC') ? true : false, // Only show secondary axis in asset mode with other assets
                 position: 'right',
-                grid: { drawOnChartArea: false }, // only want the grid lines for one axis to show up
+                grid: { drawOnChartArea: false },
                 ticks: { color: '#0088ff', callback: (value) => '$' + value.toLocaleString() }
             }
         },
@@ -149,7 +199,7 @@ const PriceChart: React.FC<PriceChartProps> = ({ holdings = [] }) => {
     return (
         <div className="chart-container glass-panel">
             <div className="chart-header">
-                <h3>Price History</h3>
+                <h3>{type === 'portfolio' ? 'Portfolio Value History' : 'Price History'}</h3>
                 <div className="timeframe-selector">
                     <button
                         className={timeframe === '1W' ? 'active' : ''}

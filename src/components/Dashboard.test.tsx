@@ -2,14 +2,14 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, Mock, beforeEach } from 'vitest';
 import Dashboard from './Dashboard';
 import { usePortfolio } from '../context/PortfolioContext';
-import { fetchPrice } from '../services/api';
+import { fetchPrice, fetch24hChange } from '../services/api';
 import React from 'react';
 
 // Mock dependencies
 vi.mock('../context/PortfolioContext');
 vi.mock('../services/api');
 vi.mock('./PriceChart', () => ({
-    default: () => <div data-testid="price-chart">PriceChart</div>
+    default: ({ type }: { type?: string }) => <div data-testid="price-chart">{type === 'portfolio' ? 'Portfolio Chart' : 'Price Chart'}</div>
 }));
 vi.mock('./HoldingsForm', () => ({
     default: () => <div data-testid="holdings-form">HoldingsForm</div>
@@ -26,23 +26,25 @@ describe('Dashboard', () => {
             setCurrency: mockSetCurrency
         });
         (fetchPrice as Mock).mockResolvedValue(50000);
+        (fetch24hChange as Mock).mockResolvedValue(2.5);
     });
 
     it('should render dashboard elements', async () => {
         render(<Dashboard />);
 
-        expect(screen.getByText('CryptoFolio')).toBeInTheDocument();
+        expect(screen.getByText('Bank Crypto')).toBeInTheDocument();
         expect(screen.getByText('USD')).toBeInTheDocument();
         expect(screen.getByText('BRL')).toBeInTheDocument();
-        expect(screen.getByTestId('price-chart')).toBeInTheDocument();
+        expect(screen.getAllByTestId('price-chart')).toHaveLength(2); // Two charts now
         expect(screen.getByTestId('holdings-form')).toBeInTheDocument();
     });
 
-    it('should fetch and display prices', async () => {
+    it('should fetch and display prices and 24h change', async () => {
         render(<Dashboard />);
 
         await waitFor(() => {
             expect(screen.getAllByText(/\$50,000/)[0]).toBeInTheDocument(); // BTC Price
+            expect(screen.getByText('+2.50%')).toBeInTheDocument(); // 24h Change
         });
     });
 

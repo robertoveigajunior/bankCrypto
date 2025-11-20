@@ -14,7 +14,7 @@ body {
   background-color: var(--bg-dark);
   color: var(--text-main);
   -webkit-font-smoothing: antialiased;
-  background-image: 
+  background-image:
     radial-gradient(circle at 10% 20%, rgba(0, 255, 136, 0.05) 0%, transparent 20%),
     radial-gradient(circle at 90% 80%, rgba(0, 136, 255, 0.05) 0%, transparent 20%);
 }
@@ -51,16 +51,133 @@ body {
 .logo {
   font-size: 24px;
   font-weight: 700;
-  background: linear-gradient(45deg, #fff, #888);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  font-family: 'Courier New', monospace;
+  color: var(--primary);
+  position: relative;
+  text-transform: uppercase;
+  letter-spacing: 2px;
 }
 
+.hacker-banner {
+  position: relative;
+  margin: -20px -20px 40px -20px;
+  padding: 20px;
+  background: linear-gradient(to bottom, rgba(0, 20, 0, 0.9), rgba(10, 10, 10, 0.8));
+  border-bottom: 1px solid rgba(0, 255, 136, 0.3);
+  box-shadow: 0 10px 30px rgba(0, 255, 136, 0.05);
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(5px);
+  /* Ensure it stays on top */
+  z-index: 10;
+}
+
+.hacker-banner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background:
+    linear-gradient(transparent 50%, rgba(0, 255, 136, 0.02) 50%),
+    linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+  background-size: 100% 2px, 3px 100%;
+  animation: scanlines 0.2s linear infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Flag Wave Effect */
+.hacker-banner::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 200%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 136, 0.1), transparent);
+  animation: flag-wave 3s linear infinite;
+  pointer-events: none;
+}
+
+.hacker-banner .logo {
+  font-size: 32px;
+  z-index: 2;
+  animation: glitch-anim 3s infinite linear alternate-reverse;
+  text-shadow: 2px 2px 0px #ff00c1, -2px -2px 0px #00fff9;
+}
+
+.hacker-banner .logo::before,
+.hacker-banner .logo::after {
+  display: none;
+  /* Simplify glitch for cleaner look with wave */
+}
+
+@keyframes flag-wave {
+  0% {
+    transform: translateX(0) skewX(0deg);
+  }
+
+  50% {
+    transform: translateX(50%) skewX(-5deg);
+  }
+
+  100% {
+    transform: translateX(100%) skewX(0deg);
+  }
+}
+
+
+@keyframes scanlines {
+  0% {
+    background-position: 0 0;
+  }
+
+  100% {
+    background-position: 0 4px;
+  }
+}
+
+@keyframes glitch-anim {
+  0% {
+    transform: translate(0);
+  }
+
+  20% {
+    transform: translate(-2px, 2px);
+  }
+
+  40% {
+    transform: translate(-2px, -2px);
+  }
+
+  60% {
+    transform: translate(2px, 2px);
+  }
+
+  80% {
+    transform: translate(2px, -2px);
+  }
+
+  100% {
+    transform: translate(0);
+  }
+}
+
+
+
 .currency-toggle {
+  position: absolute;
+  right: 20px;
   background: rgba(255, 255, 255, 0.05);
   border-radius: 20px;
   padding: 4px;
   display: flex;
+  z-index: 20;
+  /* Above banner effects */
 }
 
 .currency-toggle button {
@@ -110,6 +227,14 @@ body {
 .stat-card.highlight .stat-value {
   color: var(--primary);
   text-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
+}
+
+.stat-value.positive {
+  color: #00ff88;
+}
+
+.stat-value.negative {
+  color: #ff4444;
 }
 
 /* Content Grid */
@@ -264,4 +389,82 @@ body {
   font-style: italic;
   text-align: center;
   font-size: 14px;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 480px) {
+  .app-container {
+    padding: 10px;
+  }
+
+  .glass-panel {
+    padding: 16px;
+  }
+
+  .app-header {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+    margin-bottom: 24px;
+  }
+
+  .logo {
+    font-size: 20px;
+  }
+
+  .currency-toggle {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .currency-toggle button {
+    flex: 1;
+    text-align: center;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .stat-value {
+    font-size: 24px;
+  }
+
+  .chart-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .timeframe-selector {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .timeframe-selector button {
+    flex: 1;
+    margin-left: 0;
+    margin-right: 8px;
+  }
+
+  .timeframe-selector button:last-child {
+    margin-right: 0;
+  }
+
+  .chart-wrapper {
+    height: 250px;
+  }
+
+  .holding-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .holding-item button {
+    align-self: flex-end;
+    margin-top: -28px;
+  }
 }

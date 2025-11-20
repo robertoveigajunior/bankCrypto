@@ -75,6 +75,28 @@ describe('PriceChart', () => {
         expect(fetchHistory).toHaveBeenCalledWith('ETH', '1d', 30);
     });
 
+    it('should render portfolio chart with aggregated value', async () => {
+        const holdings = [
+            { symbol: 'BTC', quantity: 1 },
+            { symbol: 'ETH', quantity: 10 }
+        ];
+        (fetchHistory as Mock).mockResolvedValue([
+            { time: 1620000000000, price: 50000 },
+            { time: 1620086400000, price: 51000 }
+        ]);
+
+        render(<PriceChart type="portfolio" holdings={holdings} />);
+
+        await waitFor(() => {
+            expect(screen.getByTestId('line-chart')).toBeInTheDocument();
+            expect(screen.getByText('Portfolio Value History')).toBeInTheDocument();
+        });
+
+        // Should fetch history for all assets
+        expect(fetchHistory).toHaveBeenCalledWith('BTC', '1d', 30);
+        expect(fetchHistory).toHaveBeenCalledWith('ETH', '1d', 30);
+    });
+
     it('should handle fetch error', async () => {
         const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
         (fetchHistory as Mock).mockRejectedValue(new Error('Fetch failed'));
