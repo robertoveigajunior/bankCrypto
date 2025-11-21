@@ -133,7 +133,10 @@ export const en = {
             `• Trading strategies\n\n` +
             `Try asking: "Should I invest in BTC now?" or "What's the current market sentiment?"`,
 
-        // Errors
+        newsBlock: (items: any[]) => {
+            const lines = items.map(i => `• [${i.title}](${i.url})`).join('\n');
+            return `📰 Recent news:\n${lines}`;
+        },
         priceError: (crypto: string) => `I couldn't fetch the current ${crypto} price. Please try again.`,
         generalError: "I'm having trouble analyzing the market right now. Please try again in a moment.",
         chatError: "Sorry, I'm having trouble right now. Please try again."

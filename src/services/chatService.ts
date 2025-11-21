@@ -1,5 +1,6 @@
 import { fetchFearGreedIndex, getInvestmentRecommendation, getSentimentInfo } from './marketSentiment';
 import { fetchPrice, fetch24hChange } from './api';
+import { fetchNews } from './newsService';
 
 export interface ChatMessage {
     id: string;
@@ -46,12 +47,22 @@ export const generateChatResponse = async (userMessage: string, t?: any): Promis
             message.includes('sentimento') || message.includes('mercado') || message.includes('medo') ||
             message.includes('ganância')) {
             if (t) {
-                return t.responses.marketSentiment(sentimentInfo.label, sentiment.value, sentimentInfo.description);
+                let resp = t.responses.marketSentiment(sentimentInfo.label, sentiment.value, sentimentInfo.description);
+                const news = await fetchNews(crypto);
+                if (news.length) {
+                    resp += `\n\n${t.responses.newsBlock(news)}`;
+                }
+                return resp;
             }
-            return `${sentimentInfo.emoji} **Current Market Sentiment**\n\n` +
+            let resp = `${sentimentInfo.emoji} **Current Market Sentiment**\n\n` +
                 `The crypto market is currently showing **${sentimentInfo.label}** (${sentiment.value}/100).\n\n` +
                 `${sentimentInfo.description}\n\n` +
                 `This index is based on volatility, market momentum, social media sentiment, and trading volume.`;
+            const news = await fetchNews(crypto);
+            if (news.length) {
+                resp += `\n\n${t.responses.newsBlock(news)}`;
+            }
+            return resp;
         }
 
         // Question about price
@@ -63,15 +74,25 @@ export const generateChatResponse = async (userMessage: string, t?: any): Promis
                 const priceFormatted = price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
                 if (t) {
-                    return t.responses.priceInfo(crypto, priceFormatted, change, sentimentInfo.label, sentiment.value, sentimentInfo.description);
+                    let resp = t.responses.priceInfo(crypto, priceFormatted, change, sentimentInfo.label, sentiment.value, sentimentInfo.description);
+                    const news = await fetchNews(crypto);
+                    if (news.length) {
+                        resp += `\n\n${t.responses.newsBlock(news)}`;
+                    }
+                    return resp;
                 }
 
                 const changeEmoji = change >= 0 ? '📈' : '📉';
-                return `${changeEmoji} **${crypto} Current Price**\n\n` +
+                let resp = `${changeEmoji} **${crypto} Current Price**\n\n` +
                     `**Price**: $${priceFormatted}\n` +
                     `**24h Change**: ${change >= 0 ? '+' : ''}${change.toFixed(2)}%\n\n` +
                     `**Market Sentiment**: ${sentimentInfo.label} (${sentiment.value}/100)\n` +
                     `${sentimentInfo.description}`;
+                const news = await fetchNews(crypto);
+                if (news.length) {
+                    resp += `\n\n${t.responses.newsBlock(news)}`;
+                }
+                return resp;
             } catch (error) {
                 if (t) {
                     return t.responses.priceError(crypto);
@@ -131,7 +152,7 @@ export const generateChatResponse = async (userMessage: string, t?: any): Promis
             return t.responses.default(sentimentInfo.label, sentiment.value);
         }
 
-        return `👋 **Hi! I'm your crypto investment advisor.**\n\n` +
+        let resp = `👋 **Hi! I'm your crypto investment advisor.**\n\n` +
             `**Current Market**: ${sentimentInfo.label} (${sentiment.value}/100) ${sentimentInfo.emoji}\n\n` +
             `I can help you with:\n` +
             `• Investment timing for BTC, ETH, and other cryptos\n` +
@@ -139,6 +160,11 @@ export const generateChatResponse = async (userMessage: string, t?: any): Promis
             `• Price information\n` +
             `• Trading strategies\n\n` +
             `Try asking: "Should I invest in BTC now?" or "What's the current market sentiment?"`;
+        const news = await fetchNews(crypto);
+        if (news.length) {
+            resp += `\n\n${t.responses.newsBlock(news)}`;
+        }
+        return resp;
 
     } catch (error) {
         console.error('Error generating chat response:', error);

@@ -83,6 +83,10 @@ export const ptBR: Translation = {
             `**Sentimento do Mercado**: ${label} (${value}/100)\n` +
             `${description}`,
 
+        newsBlock: (items: any[]) => {
+            const lines = items.map(i => `• [${i.title}](${i.url})`).join('\n');
+            return `📰 Notícias recentes:\n${lines}`;
+        },
         // Selling advice
         sellGreed: (value: number, label: string) =>
             `🤑 **Considere Realizar Lucros**\n\n` +
