@@ -99,6 +99,7 @@ const InvestmentChat: React.FC = () => {
                 <div className="chat-title">
                     <span className="chat-icon">💬</span>
                     <h3>{t.chat.title}</h3>
+                    <span className="ai-model-badge">GPT-4</span>
                 </div>
                 <div className="chat-header-right">
                     <select
