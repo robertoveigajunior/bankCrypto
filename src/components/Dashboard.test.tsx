@@ -29,10 +29,9 @@ describe('Dashboard', () => {
         (fetch24hChange as Mock).mockResolvedValue(2.5);
     });
 
-    it('should render dashboard elements', async () => {
+    it('renders the dashboard with CryptoFolio logo', () => {
         render(<Dashboard />);
-
-        expect(screen.getByText('Bank Crypto')).toBeInTheDocument();
+        expect(screen.getByText('CryptoFolio')).toBeInTheDocument();
         expect(screen.getByText('USD')).toBeInTheDocument();
         expect(screen.getByText('BRL')).toBeInTheDocument();
         expect(screen.getAllByTestId('price-chart')).toHaveLength(2); // Two charts now

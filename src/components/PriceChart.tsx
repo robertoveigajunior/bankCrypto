@@ -152,8 +152,20 @@ const PriceChart: React.FC<PriceChartProps> = ({ symbol = 'BTC', holdings = [], 
         getData();
     }, [holdings, timeframe, type, symbol]);
 
+    useEffect(() => {
+        const handleResize = () => {
+            if (chartData) {
+                setChartData({ ...chartData }); // Trigger re-render
+            }
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, [chartData]);
+
     const options: ChartOptions<'line'> = {
         responsive: true,
+        maintainAspectRatio: false,
         plugins: {
             legend: {
                 display: true,

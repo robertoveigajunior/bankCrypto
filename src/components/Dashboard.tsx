@@ -63,21 +63,21 @@ const Dashboard: React.FC = () => {
     return (
         <div className="dashboard">
             <div className="hacker-banner">
-                <div className="logo" data-text="Bank Crypto">Bank Crypto</div>
-                <div className="currency-toggle">
-                    <button
-                        className={currency === 'USD' ? 'active' : ''}
-                        onClick={() => setCurrency('USD')}
-                    >
-                        USD
-                    </button>
-                    <button
-                        className={currency === 'BRL' ? 'active' : ''}
-                        onClick={() => setCurrency('BRL')}
-                    >
-                        BRL
-                    </button>
-                </div>
+                <div className="logo" data-text="CryptoFolio">CryptoFolio</div>
+            </div>
+            <div className="currency-toggle">
+                <button
+                    className={currency === 'USD' ? 'active' : ''}
+                    onClick={() => setCurrency('USD')}
+                >
+                    USD
+                </button>
+                <button
+                    className={currency === 'BRL' ? 'active' : ''}
+                    onClick={() => setCurrency('BRL')}
+                >
+                    BRL
+                </button>
             </div>
 
             <main className="main-content">

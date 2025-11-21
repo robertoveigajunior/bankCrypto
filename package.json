@@ -2,18 +2,21 @@
   "name": "bankcrypto",
   "private": true,
   "version": "0.0.0",
-  "type": "module",
+  "main": "dist-electron/main.js",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest",
-    "coverage": "vitest run --coverage"
+    "coverage": "vitest run --coverage",
+    "electron:dev": "concurrently \"npm run dev\" \"wait-on http://localhost:5173 && tsc -p tsconfig.electron.json && electron .\"",
+    "electron:build": "tsc -p tsconfig.electron.json && vite build && electron-builder"
   },
   "dependencies": {
     "axios": "^1.13.2",
     "chart.js": "^4.5.1",
+    "electron-squirrel-startup": "^1.0.1",
     "react": "^19.2.0",
     "react-chartjs-2": "^5.3.1",
     "react-dom": "^19.2.0"
@@ -27,6 +30,9 @@
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.0",
     "@vitest/coverage-v8": "^4.0.10",
+    "concurrently": "^9.2.1",
+    "electron": "^39.2.3",
+    "electron-builder": "^26.0.12",
     "eslint": "^9.39.1",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
@@ -34,6 +40,21 @@
     "happy-dom": "^20.0.10",
     "typescript": "^5.9.3",
     "vite": "^7.2.2",
-    "vitest": "^4.0.10"
+    "vitest": "^4.0.10",
+    "wait-on": "^9.0.3"
+  },
+  "build": {
+    "appId": "com.cryptofolio.app",
+    "productName": "CryptoFolio",
+    "mac": {
+      "category": "public.app-category.finance"
+    },
+    "files": [
+      "dist/**/*",
+      "dist-electron/**/*"
+    ],
+    "directories": {
+      "output": "release"
+    }
   }
 }

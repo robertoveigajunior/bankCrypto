@@ -171,7 +171,8 @@ body {
 
 .currency-toggle {
   position: absolute;
-  right: 20px;
+  top: 30px;
+  right: 30px;
   background: rgba(255, 255, 255, 0.05);
   border-radius: 20px;
   padding: 4px;
@@ -288,6 +289,7 @@ body {
 .chart-wrapper {
   height: 300px;
   width: 100%;
+  overflow: hidden;
 }
 
 /* Holdings Form */
@@ -412,19 +414,29 @@ body {
     font-size: 20px;
   }
 
+  .hacker-banner {
+    margin-bottom: 20px;
+  }
+
   .currency-toggle {
+    position: relative;
+    top: auto;
+    right: auto;
     width: 100%;
     justify-content: center;
+    margin-bottom: 20px;
   }
 
   .currency-toggle button {
     flex: 1;
     text-align: center;
+    padding: 8px 16px;
+    font-size: 14px;
   }
 
   .stats-grid {
-    grid-template-columns: 1fr;
-    gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
   }
 
   .stat-value {
