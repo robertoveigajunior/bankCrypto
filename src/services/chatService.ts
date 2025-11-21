@@ -9,11 +9,32 @@ export interface ChatMessage {
     timestamp: number;
 }
 
+// Respostas criativas para interações humanas
+const casualResponses = [
+    { pattern: /obrigado|valeu|thanks|thank you/i, reply: () => [
+        'De nada! 😊 Se precisar de mais alguma coisa, é só perguntar.',
+        'Sempre à disposição! 🚀',
+        'Conte comigo para suas dúvidas de cripto!'
+    ][Math.floor(Math.random()*3)] },
+    { pattern: /bom dia/i, reply: () => 'Bom dia! Que seu portfólio só cresça hoje! ☀️' },
+    { pattern: /boa tarde/i, reply: () => 'Boa tarde! Pronto para acompanhar o mercado?' },
+    { pattern: /boa noite/i, reply: () => 'Boa noite! Lembre-se: paciência é uma virtude no mundo cripto. 🌙' },
+    { pattern: /oi|olá|hello|hi/i, reply: () => 'Olá! Como posso ajudar você no universo das criptos?' },
+    { pattern: /tchau|até logo|bye/i, reply: () => 'Até mais! Volte sempre para dicas e análises.' },
+];
+
 /**
  * Generate AI response based on user question and market data
  */
 export const generateChatResponse = async (userMessage: string, t?: any): Promise<string> => {
     const message = userMessage.toLowerCase().trim();
+
+    // Resposta casual se detectar interação humana
+    for (const c of casualResponses) {
+        if (c.pattern.test(userMessage)) {
+            return c.reply();
+        }
+    }
 
     try {
         // Fetch market sentiment

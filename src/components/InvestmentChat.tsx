@@ -1,8 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { generateChatResponse, createMessage, ChatMessage } from '../services/chatService';
-import { fetchFearGreedIndex, getSentimentInfo } from '../services/marketSentiment';
+import { fetchFearGreedIndex, getSentimentInfo, fetchFearGreedHistory } from '../services/marketSentiment';
 import { useLanguage } from '../context/LanguageContext';
 import { Language } from '../i18n';
+import { Line } from 'react-chartjs-2';
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
+
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 const InvestmentChat: React.FC = () => {
     const { language, setLanguage, t } = useLanguage();
@@ -10,6 +14,8 @@ const InvestmentChat: React.FC = () => {
     const [inputValue, setInputValue] = useState('');
     const [isTyping, setIsTyping] = useState(false);
     const [sentiment, setSentiment] = useState<{ value: number; label: string; color: string; emoji: string } | null>(null);
+    const [fearGreedHistory, setFearGreedHistory] = useState<number[]>([]);
+    const [historyLoading, setHistoryLoading] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     // Fetch sentiment on mount and when language changes
@@ -48,6 +54,16 @@ const InvestmentChat: React.FC = () => {
         );
         setMessages([welcomeMessage]);
     }, [t]);
+
+    useEffect(() => {
+        if (messages[messages.length-1]?.text.includes('Medo Extremo')) {
+            setHistoryLoading(true);
+            fetchFearGreedHistory().then(data => {
+                setFearGreedHistory(data);
+                setHistoryLoading(false);
+            });
+        }
+    }, [messages]);
 
     const handleSend = async () => {
         if (!inputValue.trim()) return;
@@ -93,14 +109,36 @@ const InvestmentChat: React.FC = () => {
         });
     };
 
+    // Função para analisar se há oportunidade de compra baseada no histórico do índice
+    function getBuyOpportunity(history: number[]): string | null {
+        if (history.length < 3) return null;
+        // Se os últimos 3 dias estão em "medo" ou "medo extremo", sugere oportunidade
+        const last3 = history.slice(-3);
+        const isFear = last3.every(v => v <= 40);
+        if (isFear) {
+            return 'O mercado está em medo ou medo extremo há vários dias. Isso pode indicar uma boa oportunidade de compra para quem pensa em alta no longo prazo (estratégia de acumulação). Considere estudar aportes regulares (DCA) enquanto o sentimento permanece negativo.';
+        }
+        return null;
+    }
+
+    const handleNewChat = () => {
+        const welcomeMessage = createMessage(
+            t.responses.welcome,
+            'bot'
+        );
+        setMessages([welcomeMessage]);
+    };
+
     return (
         <div className="investment-chat glass-panel">
             <div className="chat-header">
                 <div className="chat-title">
                     <span className="chat-icon">💬</span>
                     <h3>{t.chat.title}</h3>
-                    <span className="ai-model-badge">GPT-4</span>
                 </div>
+                <button onClick={handleNewChat} style={{marginLeft: 'auto', marginRight: 10, background: '#222', color: '#00ff88', border: '1px solid #00ff88', borderRadius: 6, padding: '4px 16px', cursor: 'pointer', fontWeight: 600, fontSize: 14}}>
+                    Novo Chat
+                </button>
                 <div className="chat-header-right">
                     <select
                         className="language-selector"
@@ -147,6 +185,55 @@ const InvestmentChat: React.FC = () => {
                         </div>
                     </div>
                 ))}
+
+                {messages[messages.length-1]?.text.includes('Medo Extremo') && fearGreedHistory.length > 0 && (
+                    <div style={{margin: '24px 0'}}>
+                        <h4>Histórico do Índice de Medo & Ganância</h4>
+                        <div style={{display: 'flex', gap: 4, alignItems: 'flex-end', height: 40, margin: '12px 0'}}>
+                            {fearGreedHistory.map((val, i) => {
+                                let color = '';
+                                if (val <= 20) color = '#ff4444';
+                                else if (val <= 40) color = '#ffbb44';
+                                else if (val <= 60) color = '#ffee44';
+                                else if (val <= 80) color = '#88ff44';
+                                else color = '#22cc44';
+                                return (
+                                    <div key={i} style={{
+                                        width: 32,
+                                        height: 32,
+                                        background: color,
+                                        borderRadius: 8,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        fontWeight: 'bold',
+                                        color: '#222',
+                                        fontSize: 14,
+                                        boxShadow: '0 1px 4px #0002',
+                                        border: '1px solid #fff3',
+                                        flexDirection: 'column',
+                                        transition: 'background 0.3s'
+                                    }} title={`Índice: ${val}`}>
+                                        {val}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                        <div style={{display:'flex', justifyContent:'space-between', fontSize:12, color:'#aaa'}}>
+                            <span>Mín: {Math.min(...fearGreedHistory)}</span>
+                            <span>Máx: {Math.max(...fearGreedHistory)}</span>
+                        </div>
+                        <div style={{fontSize:12, marginTop:4, color:'#888'}}>
+                            <span style={{color:'#22cc44'}}>Verde = Bom momento para comprar</span> &nbsp;|&nbsp; <span style={{color:'#ff4444'}}>Vermelho = Não é um bom momento</span>
+                        </div>
+                        {/* Oportunidade de compra baseada no histórico */}
+                        {getBuyOpportunity(fearGreedHistory) && (
+                            <div style={{marginTop:12, background:'#222', color:'#fff', padding:12, borderRadius:8, fontSize:14, border:'1px solid #00ff88'}}>
+                                <b>Oportunidade de Compra:</b> {getBuyOpportunity(fearGreedHistory)}
+                            </div>
+                        )}
+                    </div>
+                )}
 
                 {isTyping && (
                     <div className="chat-message bot-message">

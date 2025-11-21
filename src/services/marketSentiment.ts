@@ -53,6 +53,23 @@ export const fetchFearGreedIndex = async (): Promise<SentimentData> => {
 };
 
 /**
+ * Busca o histórico do Fear & Greed Index dos últimos 7 dias
+ */
+export const fetchFearGreedHistory = async (): Promise<number[]> => {
+    try {
+        const response = await axios.get('https://api.alternative.me/fng/?limit=7');
+        // O array já vem do mais recente para o mais antigo
+        const data = response.data.data;
+        // Inverter para mostrar do mais antigo para o mais recente
+        return data.reverse().map((item: any) => parseInt(item.value));
+    } catch (error) {
+        console.error('Erro ao buscar histórico do Fear & Greed Index:', error);
+        // Retorna array vazio em caso de erro
+        return [];
+    }
+};
+
+/**
  * Get sentiment interpretation and color
  */
 export const getSentimentInfo = (value: number, t?: any): {

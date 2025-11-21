@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { usePortfolio } from '../context/PortfolioContext';
 import { fetchPrice, fetch24hChange } from '../services/api';
+import { fetchNews, NewsItem } from '../services/newsService';
 import PriceChart from './PriceChart';
 import HoldingsForm from './HoldingsForm';
 import InvestmentChat from './InvestmentChat';
@@ -10,6 +11,11 @@ const Dashboard: React.FC = () => {
     const [btcPrice, setBtcPrice] = useState<number>(0);
     const [btcChange, setBtcChange] = useState<number>(0);
     const [portfolioValue, setPortfolioValue] = useState<number>(0);
+
+    // Estado para notícias
+    const [btcNews, setBtcNews] = useState<NewsItem[]>([]);
+    const [ethNews, setEthNews] = useState<NewsItem[]>([]);
+    const [xrpNews, setXrpNews] = useState<NewsItem[]>([]);
 
     // Exchange rate (mocked for simplicity if not fetching, but we can try to fetch or just use a fixed rate for demo)
     // In a real app, we'd fetch USD/BRL rate. Let's assume 1 USD = 5.80 BRL for now or fetch it if possible.
@@ -52,6 +58,18 @@ const Dashboard: React.FC = () => {
         const interval = setInterval(updateData, 10000); // Update every 10s
         return () => clearInterval(interval);
     }, [holdings]);
+
+    useEffect(() => {
+        // Função para atualizar as notícias
+        const updateNews = () => {
+            fetchNews('BTC').then(setBtcNews);
+            fetchNews('ETH').then(setEthNews);
+            fetchNews('XRP').then(setXrpNews);
+        };
+        updateNews();
+        const interval = setInterval(updateNews, 60 * 1000); // Atualiza a cada 1 minuto
+        return () => clearInterval(interval);
+    }, []);
 
     const formatCurrency = (value: number) => {
         const val = currency === 'BRL' ? value * USD_BRL_RATE : value;
@@ -109,6 +127,27 @@ const Dashboard: React.FC = () => {
                     <div className="holdings-section">
                         <HoldingsForm />
                     </div>
+                </div>
+
+                {/* Card de notícias logo abaixo do Manage Portfolio */}
+                <div style={{display:'flex', gap:24, marginTop:24, flexWrap:'wrap'}}>
+                  {[{symbol:'BTC', news:btcNews}, {symbol:'ETH', news:ethNews}, {symbol:'XRP', news:xrpNews}].map(({symbol, news}) => (
+                    <div key={symbol} style={{background:'#181c24', borderRadius:12, boxShadow:'0 2px 12px #0002', padding:20, minWidth:260, flex:1, maxWidth:340}}>
+                      <h4 style={{margin:'0 0 12px 0', color:'#00ff88', letterSpacing:1}}>{symbol} News</h4>
+                      {news.length === 0 ? (
+                        <div style={{color:'#aaa', fontSize:14}}>Nenhuma notícia recente.</div>
+                      ) : (
+                        <ul style={{listStyle:'none', padding:0, margin:0}}>
+                          {news.map((n, i) => (
+                            <li key={i} style={{marginBottom:10}}>
+                              <a href={n.url} target="_blank" rel="noopener noreferrer" style={{color:'#fff', textDecoration:'underline', fontWeight:500}}>{n.title}</a>
+                              <div style={{fontSize:12, color:'#aaa'}}>{new Date(n.date).toLocaleDateString()}</div>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  ))}
                 </div>
 
                 <div className="chat-section">
