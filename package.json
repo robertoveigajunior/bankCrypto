@@ -44,10 +44,14 @@
     "wait-on": "^9.0.3"
   },
   "build": {
-    "appId": "com.cryptofolio.app",
-    "productName": "CryptoFolio",
+    "appId": "com.bankcrypto.app",
+    "productName": "Bank Crypto",
     "mac": {
-      "category": "public.app-category.finance"
+      "category": "public.app-category.finance",
+      "extendInfo": {
+        "CFBundleName": "Bank Crypto",
+        "CFBundleDisplayName": "Bank Crypto"
+      }
     },
     "files": [
       "dist/**/*",

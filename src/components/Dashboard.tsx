@@ -3,6 +3,7 @@ import { usePortfolio } from '../context/PortfolioContext';
 import { fetchPrice, fetch24hChange } from '../services/api';
 import PriceChart from './PriceChart';
 import HoldingsForm from './HoldingsForm';
+import InvestmentChat from './InvestmentChat';
 
 const Dashboard: React.FC = () => {
     const { holdings, currency, setCurrency } = usePortfolio();
@@ -108,6 +109,10 @@ const Dashboard: React.FC = () => {
                     <div className="holdings-section">
                         <HoldingsForm />
                     </div>
+                </div>
+
+                <div className="chat-section">
+                    <InvestmentChat />
                 </div>
             </main>
         </div>
