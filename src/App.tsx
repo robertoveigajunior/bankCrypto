@@ -7,22 +7,18 @@ import DCACalculator from './pages/DCACalculator';
 import InvestmentChat from './components/InvestmentChat';
 import './index.css';
 
-import { ApiKeyProvider } from './context/ApiKeyContext'; // Added import for ApiKeyProvider
 
 function App() {
     return (
         <LanguageProvider>
             <PortfolioProvider>
-                <ApiKeyProvider>
-                    <Router>
-                        <div className="app-container">
-                            <header className="app-header">
-                                <div className="hacker-banner">
-                                    <div className="logo">BANK CRYPTO VAULT</div>
-                                </div>
-                                <Navigation />
-                            </header>
 
+                <Router>
+                    <div className="app-layout">
+                        <header className="app-header-full">
+                            <Navigation />
+                        </header>
+                        <div className="app-container">
                             <main>
                                 <Routes>
                                     <Route path="/" element={<Dashboard />} />
@@ -31,8 +27,9 @@ function App() {
                                 </Routes>
                             </main>
                         </div>
-                    </Router>
-                </ApiKeyProvider>
+                    </div>
+                </Router>
+
             </PortfolioProvider>
         </LanguageProvider>
     );

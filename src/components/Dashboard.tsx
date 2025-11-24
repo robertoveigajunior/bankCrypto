@@ -98,15 +98,14 @@ const Dashboard: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="content-grid">
-                    <div className="chart-section">
-                        <PriceChart symbol="BTC" holdings={holdings} />
-                        <div style={{ marginTop: '20px' }}>
-                            <PriceChart type="portfolio" holdings={holdings} />
-                        </div>
-                    </div>
-                    <div className="holdings-section">
-                        <HoldingsForm />
+                <div className="holdings-section" style={{ marginBottom: '24px' }}>
+                    <HoldingsForm />
+                </div>
+
+                <div className="chart-section">
+                    <PriceChart symbol="BTC" holdings={holdings} />
+                    <div style={{ marginTop: '20px' }}>
+                        <PriceChart type="portfolio" holdings={holdings} />
                     </div>
                 </div>
 
