@@ -5,12 +5,53 @@ export const en = {
         'pt-BR': 'Português'
     },
 
+    // Navigation
+    nav: {
+        dashboard: 'Dashboard',
+        dca: 'DCA Calculator',
+        chat: 'Investment Advisor'
+    },
+
     // Chat UI
     chat: {
         title: 'Investment Advisor',
         placeholder: 'Ask about investing in crypto...',
         sendButton: 'Send',
         typing: 'Typing...'
+    },
+
+    // Dashboard
+    dashboard: {
+        title: 'Dashboard',
+        description: 'Monitor your crypto portfolio, track real-time prices, and get AI-powered investment insights.',
+        newsTitle: 'Market News',
+        noNews: 'No recent news available.'
+    },
+
+    // DCA Calculator
+    dca: {
+        title: 'DCA Calculator',
+        description: 'Simulate Dollar-Cost Averaging strategies to see how regular investments would have performed over time.',
+        symbol: 'Crypto Symbol',
+        amount: 'Investment Amount',
+        frequency: 'Frequency',
+        duration: 'Duration (Years)',
+        calculate: 'Simulate',
+        calculating: 'Calculating...',
+        totalInvested: 'Total Invested',
+        totalValue: 'Total Value',
+        roi: 'ROI',
+        frequencies: {
+            daily: 'Daily',
+            weekly: 'Weekly',
+            monthly: 'Monthly'
+        },
+        years: {
+            1: '1 Year',
+            2: '2 Years',
+            3: '3 Years',
+            5: '5 Years'
+        }
     },
 
     // Sentiment labels

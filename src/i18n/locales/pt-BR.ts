@@ -7,12 +7,53 @@ export const ptBR: Translation = {
         'pt-BR': 'Português'
     },
 
+    // Navigation
+    nav: {
+        dashboard: 'Dashboard',
+        dca: 'Calculadora DCA',
+        chat: 'Consultor de Investimentos'
+    },
+
     // Chat UI
     chat: {
         title: 'Consultor de Investimentos',
         placeholder: 'Pergunte sobre investir em cripto...',
         sendButton: 'Enviar',
         typing: 'Digitando...'
+    },
+
+    // Dashboard
+    dashboard: {
+        title: 'Dashboard',
+        description: 'Monitore seu portfólio de criptomoedas, acompanhe preços em tempo real e obtenha insights de investimento com IA.',
+        newsTitle: 'Notícias do Mercado',
+        noNews: 'Nenhuma notícia recente disponível.'
+    },
+
+    // DCA Calculator
+    dca: {
+        title: 'Calculadora DCA',
+        description: 'Simule estratégias de Preço Médio (DCA) para ver como investimentos regulares teriam performado ao longo do tempo.',
+        symbol: 'Símbolo Cripto',
+        amount: 'Valor do Investimento',
+        frequency: 'Frequência',
+        duration: 'Duração (Anos)',
+        calculate: 'Simular',
+        calculating: 'Calculando...',
+        totalInvested: 'Total Investido',
+        totalValue: 'Valor Total',
+        roi: 'ROI',
+        frequencies: {
+            daily: 'Diário',
+            weekly: 'Semanal',
+            monthly: 'Mensal'
+        },
+        years: {
+            1: '1 Ano',
+            2: '2 Anos',
+            3: '3 Anos',
+            5: '5 Anos'
+        }
     },
 
     // Sentiment labels

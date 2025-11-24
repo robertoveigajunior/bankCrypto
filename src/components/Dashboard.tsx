@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { usePortfolio } from '../context/PortfolioContext';
+import { useLanguage } from '../context/LanguageContext';
 import { fetchPrice, fetch24hChange } from '../services/api';
 import { fetchNews, NewsItem } from '../services/newsService';
 import PriceChart from './PriceChart';
@@ -7,19 +8,14 @@ import HoldingsForm from './HoldingsForm';
 import InvestmentChat from './InvestmentChat';
 
 const Dashboard: React.FC = () => {
-    const { holdings, currency, setCurrency } = usePortfolio();
+    const { t } = useLanguage();
+    const { holdings, currency, rate } = usePortfolio();
     const [btcPrice, setBtcPrice] = useState<number>(0);
     const [btcChange, setBtcChange] = useState<number>(0);
     const [portfolioValue, setPortfolioValue] = useState<number>(0);
 
     // Estado para notícias
-    const [btcNews, setBtcNews] = useState<NewsItem[]>([]);
-    const [ethNews, setEthNews] = useState<NewsItem[]>([]);
-    const [xrpNews, setXrpNews] = useState<NewsItem[]>([]);
-
-    // Exchange rate (mocked for simplicity if not fetching, but we can try to fetch or just use a fixed rate for demo)
-    // In a real app, we'd fetch USD/BRL rate. Let's assume 1 USD = 5.80 BRL for now or fetch it if possible.
-    const USD_BRL_RATE = 5.80;
+    const [marketNews, setMarketNews] = useState<NewsItem[]>([]);
 
     useEffect(() => {
         const updateData = async () => {
@@ -62,17 +58,15 @@ const Dashboard: React.FC = () => {
     useEffect(() => {
         // Função para atualizar as notícias
         const updateNews = () => {
-            fetchNews('BTC').then(setBtcNews);
-            fetchNews('ETH').then(setEthNews);
-            fetchNews('XRP').then(setXrpNews);
+            fetchNews(6).then(setMarketNews);
         };
         updateNews();
-        const interval = setInterval(updateNews, 60 * 1000); // Atualiza a cada 1 minuto
+        const interval = setInterval(updateNews, 5 * 60 * 1000); // Atualiza a cada 5 minutos
         return () => clearInterval(interval);
     }, []);
 
     const formatCurrency = (value: number) => {
-        const val = currency === 'BRL' ? value * USD_BRL_RATE : value;
+        const val = currency === 'BRL' ? value * rate : value;
         return new Intl.NumberFormat(currency === 'BRL' ? 'pt-BR' : 'en-US', {
             style: 'currency',
             currency: currency
@@ -81,23 +75,10 @@ const Dashboard: React.FC = () => {
 
     return (
         <div className="dashboard">
-            <div className="hacker-banner">
-                <div className="logo" data-text="CryptoFolio">CryptoFolio</div>
-            </div>
-            <div className="currency-toggle">
-                <button
-                    className={currency === 'USD' ? 'active' : ''}
-                    onClick={() => setCurrency('USD')}
-                >
-                    USD
-                </button>
-                <button
-                    className={currency === 'BRL' ? 'active' : ''}
-                    onClick={() => setCurrency('BRL')}
-                >
-                    BRL
-                </button>
-            </div>
+            <header style={{ marginBottom: '24px' }}>
+                <h1 style={{ margin: '0 0 8px 0', fontSize: '28px', color: '#fff' }}>{t.dashboard.title}</h1>
+                <p style={{ margin: 0, color: '#8b949e', fontSize: '14px' }}>{t.dashboard.description}</p>
+            </header>
 
             <main className="main-content">
                 <div className="stats-grid">
@@ -129,25 +110,51 @@ const Dashboard: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Card de notícias logo abaixo do Manage Portfolio */}
-                <div style={{display:'flex', gap:24, marginTop:24, flexWrap:'wrap'}}>
-                  {[{symbol:'BTC', news:btcNews}, {symbol:'ETH', news:ethNews}, {symbol:'XRP', news:xrpNews}].map(({symbol, news}) => (
-                    <div key={symbol} style={{background:'#181c24', borderRadius:12, boxShadow:'0 2px 12px #0002', padding:20, minWidth:260, flex:1, maxWidth:340}}>
-                      <h4 style={{margin:'0 0 12px 0', color:'#00ff88', letterSpacing:1}}>{symbol} News</h4>
-                      {news.length === 0 ? (
-                        <div style={{color:'#aaa', fontSize:14}}>Nenhuma notícia recente.</div>
-                      ) : (
-                        <ul style={{listStyle:'none', padding:0, margin:0}}>
-                          {news.map((n, i) => (
-                            <li key={i} style={{marginBottom:10}}>
-                              <a href={n.url} target="_blank" rel="noopener noreferrer" style={{color:'#fff', textDecoration:'underline', fontWeight:500}}>{n.title}</a>
-                              <div style={{fontSize:12, color:'#aaa'}}>{new Date(n.date).toLocaleDateString()}</div>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </div>
-                  ))}
+                {/* Market News Card */}
+                <div className="glass-panel" style={{ marginTop: '24px' }}>
+                    <h3 style={{ margin: '0 0 16px 0', color: '#00ff88', fontSize: '20px' }}>{t.dashboard.newsTitle}</h3>
+
+                    {marketNews.length === 0 ? (
+                        <div style={{ color: '#aaa', fontSize: 14 }}>{t.dashboard.noNews}</div>
+                    ) : (
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
+                            {marketNews.map((news) => (
+                                <a
+                                    key={news.id}
+                                    href={news.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{
+                                        textDecoration: 'none',
+                                        color: 'inherit',
+                                        background: 'rgba(255,255,255,0.03)',
+                                        borderRadius: '8px',
+                                        overflow: 'hidden',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        transition: 'transform 0.2s, background 0.2s'
+                                    }}
+                                    className="news-card"
+                                >
+                                    {news.imageurl && (
+                                        <div style={{ height: '160px', overflow: 'hidden' }}>
+                                            <img src={news.imageurl} alt={news.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                        </div>
+                                    )}
+                                    <div style={{ padding: '16px', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '12px', color: '#888' }}>
+                                            <span>{news.source}</span>
+                                            <span>{new Date(news.published_on * 1000).toLocaleDateString()}</span>
+                                        </div>
+                                        <h4 style={{ margin: '0 0 8px 0', fontSize: '16px', lineHeight: '1.4', color: '#fff' }}>{news.title}</h4>
+                                        <p style={{ margin: 0, fontSize: '14px', color: '#aaa', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                                            {news.body}
+                                        </p>
+                                    </div>
+                                </a>
+                            ))}
+                        </div>
+                    )}
                 </div>
 
                 <div className="chat-section">

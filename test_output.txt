@@ -1,0 +1,175 @@
+
+DevTools listening on ws://127.0.0.1:55162/devtools/browser/03bade92-3798-430e-ac44-5bef005ff7e8
+
+=======================================================
+
+  (Run Starting)
+
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ Cypress:        15.7.0                                                                         │
+  │ Browser:        Electron 138 (headless)                                                        │
+  │ Node Version:   v22.2.0 (/opt/homebrew/Cellar/node/22.2.0/bin/node)                            │
+  │ Specs:          1 found (regression.cy.ts)                                                     │
+  │ Searched:       cypress/e2e/regression.cy.ts                                                   │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+                                                                                                    
+  Running:  regression.cy.ts                                                                (1 of 1)
+
+
+  Bank Crypto Regression Tests
+    ✓ should load the application and display the title (275ms)
+    1) should add and remove a crypto asset
+    2) should switch languages
+    3) should display the chat feature and allow typing
+
+
+  1 passing (13s)
+  3 failing
+
+  1) Bank Crypto Regression Tests
+       should add and remove a crypto asset:
+     CypressError: Timed out retrying after 4000ms: `cy.clear()` failed because this element:
+
+`<input placeholder="BTC" required="" type="text" value="BTC">`
+
+is being covered by another element:
+
+`<div style="position: fixed; top: 0px; left: 0px; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.7); z-index: 9999; display: flex; align-items: center; justify-content: center;">...</div>`
+
+Fix this problem, or use {force: true} to disable error checking.
+
+https://on.cypress.io/element-cannot-be-interacted-with
+      at ensureIsDescendent (http://localhost:5173/__cypress/runner/cypress_runner.js:114804:68)
+      at ensureDescendents (http://localhost:5173/__cypress/runner/cypress_runner.js:114855:5)
+      at ensureDescendentsAndScroll (http://localhost:5173/__cypress/runner/cypress_runner.js:114861:14)
+      at ensureElIsNotCovered (http://localhost:5173/__cypress/runner/cypress_runner.js:114992:5)
+      at runAllChecks (http://localhost:5173/__cypress/runner/cypress_runner.js:115191:52)
+      at retryActionability (http://localhost:5173/__cypress/runner/cypress_runner.js:115228:16)
+      at tryCatcher (http://localhost:5173/__cypress/runner/cypress_runner.js:1777:23)
+      at Promise.attempt.Promise.try (http://localhost:5173/__cypress/runner/cypress_runner.js:4285:29)
+      at whenStable (http://localhost:5173/__cypress/runner/cypress_runner.js:151483:68)
+      at <unknown> (http://localhost:5173/__cypress/runner/cypress_runner.js:151424:14)
+      at tryCatcher (http://localhost:5173/__cypress/runner/cypress_runner.js:1777:23)
+      at Promise._settlePromiseFromHandler (http://localhost:5173/__cypress/runner/cypress_runner.js:1489:31)
+      at Promise._settlePromise (http://localhost:5173/__cypress/runner/cypress_runner.js:1546:18)
+      at Promise._settlePromise0 (http://localhost:5173/__cypress/runner/cypress_runner.js:1591:10)
+      at Promise._settlePromises (http://localhost:5173/__cypress/runner/cypress_runner.js:1671:18)
+      at Promise._fulfill (http://localhost:5173/__cypress/runner/cypress_runner.js:1615:18)
+      at <unknown> (http://localhost:5173/__cypress/runner/cypress_runner.js:5420:46)
+  From Your Spec Code:
+      at Object.proxyGetter [as get] (http://localhost:5173/__cypress/runner/cypress_runner.js:80776:22)
+      at exists (http://localhost:5173/__cypress/runner/cypress_runner.js:150671:26)
+      at elExists (http://localhost:5173/__cypress/runner/cypress_runner.js:150686:10)
+      at ensureExistence (http://localhost:5173/__cypress/runner/cypress_runner.js:150867:22)
+      at onFailFn (http://localhost:5173/__cypress/runner/cypress_runner.js:150896:53)
+
+  2) Bank Crypto Regression Tests
+       should switch languages:
+     CypressError: Timed out retrying after 4050ms: `cy.click()` failed because this element:
+
+`<button class="active">USD</button>`
+
+is being covered by another element:
+
+`<div style="position: fixed; top: 0px; left: 0px; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.7); z-index: 9999; display: flex; align-items: center; justify-content: center;">...</div>`
+
+Fix this problem, or use {force: true} to disable error checking.
+
+https://on.cypress.io/element-cannot-be-interacted-with
+      at ensureIsDescendent (http://localhost:5173/__cypress/runner/cypress_runner.js:114804:68)
+      at ensureDescendents (http://localhost:5173/__cypress/runner/cypress_runner.js:114855:5)
+      at ensureDescendentsAndScroll (http://localhost:5173/__cypress/runner/cypress_runner.js:114861:14)
+      at ensureElIsNotCovered (http://localhost:5173/__cypress/runner/cypress_runner.js:114992:5)
+      at runAllChecks (http://localhost:5173/__cypress/runner/cypress_runner.js:115191:52)
+      at retryActionability (http://localhost:5173/__cypress/runner/cypress_runner.js:115228:16)
+      at tryCatcher (http://localhost:5173/__cypress/runner/cypress_runner.js:1777:23)
+      at Promise.attempt.Promise.try (http://localhost:5173/__cypress/runner/cypress_runner.js:4285:29)
+      at whenStable (http://localhost:5173/__cypress/runner/cypress_runner.js:151483:68)
+      at <unknown> (http://localhost:5173/__cypress/runner/cypress_runner.js:151424:14)
+      at tryCatcher (http://localhost:5173/__cypress/runner/cypress_runner.js:1777:23)
+      at Promise._settlePromiseFromHandler (http://localhost:5173/__cypress/runner/cypress_runner.js:1489:31)
+      at Promise._settlePromise (http://localhost:5173/__cypress/runner/cypress_runner.js:1546:18)
+      at Promise._settlePromise0 (http://localhost:5173/__cypress/runner/cypress_runner.js:1591:10)
+      at Promise._settlePromises (http://localhost:5173/__cypress/runner/cypress_runner.js:1671:18)
+      at Promise._fulfill (http://localhost:5173/__cypress/runner/cypress_runner.js:1615:18)
+      at <unknown> (http://localhost:5173/__cypress/runner/cypress_runner.js:5420:46)
+  From Your Spec Code:
+      at Object.proxyGetter [as get] (http://localhost:5173/__cypress/runner/cypress_runner.js:80776:22)
+      at exists (http://localhost:5173/__cypress/runner/cypress_runner.js:150671:26)
+      at elExists (http://localhost:5173/__cypress/runner/cypress_runner.js:150686:10)
+      at ensureExistence (http://localhost:5173/__cypress/runner/cypress_runner.js:150867:22)
+      at onFailFn (http://localhost:5173/__cypress/runner/cypress_runner.js:150896:53)
+
+  3) Bank Crypto Regression Tests
+       should display the chat feature and allow typing:
+     CypressError: Timed out retrying after 4000ms: `cy.type()` failed because the center of this element is hidden from view:
+
+`<input class="chat-input" placeholder="Pergunte sobre investir em cripto..." type="text" value="">`
+
+Fix this problem, or use `{force: true}` to disable error checking.
+
+https://on.cypress.io/element-cannot-be-interacted-with
+      at ensureIsDescendent (http://localhost:5173/__cypress/runner/cypress_runner.js:114819:66)
+      at ensureDescendents (http://localhost:5173/__cypress/runner/cypress_runner.js:114855:5)
+      at possiblyScrollMultipleTimes (http://localhost:5173/__cypress/runner/cypress_runner.js:114962:22)
+      at scrollContainers (http://localhost:5173/__cypress/runner/cypress_runner.js:114984:16)
+      at ensureDescendentsAndScroll (http://localhost:5173/__cypress/runner/cypress_runner.js:114988:14)
+      at ensureElIsNotCovered (http://localhost:5173/__cypress/runner/cypress_runner.js:114992:5)
+      at runAllChecks (http://localhost:5173/__cypress/runner/cypress_runner.js:115191:52)
+      at retryActionability (http://localhost:5173/__cypress/runner/cypress_runner.js:115228:16)
+      at tryCatcher (http://localhost:5173/__cypress/runner/cypress_runner.js:1777:23)
+      at Promise.attempt.Promise.try (http://localhost:5173/__cypress/runner/cypress_runner.js:4285:29)
+      at whenStable (http://localhost:5173/__cypress/runner/cypress_runner.js:151483:68)
+      at <unknown> (http://localhost:5173/__cypress/runner/cypress_runner.js:151424:14)
+      at tryCatcher (http://localhost:5173/__cypress/runner/cypress_runner.js:1777:23)
+      at Promise._settlePromiseFromHandler (http://localhost:5173/__cypress/runner/cypress_runner.js:1489:31)
+      at Promise._settlePromise (http://localhost:5173/__cypress/runner/cypress_runner.js:1546:18)
+      at Promise._settlePromise0 (http://localhost:5173/__cypress/runner/cypress_runner.js:1591:10)
+      at Promise._settlePromises (http://localhost:5173/__cypress/runner/cypress_runner.js:1671:18)
+      at Promise._fulfill (http://localhost:5173/__cypress/runner/cypress_runner.js:1615:18)
+      at <unknown> (http://localhost:5173/__cypress/runner/cypress_runner.js:5420:46)
+
+
+
+
+  (Results)
+
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ Tests:        4                                                                                │
+  │ Passing:      1                                                                                │
+  │ Failing:      3                                                                                │
+  │ Pending:      0                                                                                │
+  │ Skipped:      0                                                                                │
+  │ Screenshots:  3                                                                                │
+  │ Video:        false                                                                            │
+  │ Duration:     13 seconds                                                                       │
+  │ Spec Ran:     regression.cy.ts                                                                 │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+
+  (Screenshots)
+
+  -  /Users/robertoveigajunior/Developer/Lab/BankCrypto/cypress/screenshots/regressio    (2560x1440)
+     n.cy.ts/Bank Crypto Regression Tests -- should add and remove a crypto asset (fa               
+     iled).png                                                                                      
+  -  /Users/robertoveigajunior/Developer/Lab/BankCrypto/cypress/screenshots/regressio    (2560x1440)
+     n.cy.ts/Bank Crypto Regression Tests -- should switch languages (failed).png                   
+  -  /Users/robertoveigajunior/Developer/Lab/BankCrypto/cypress/screenshots/regressio    (2560x1440)
+     n.cy.ts/Bank Crypto Regression Tests -- should display the chat feature and allo               
+     w typing (failed).png                                                                          
+
+
+=======================================================
+
+  (Run Finished)
+
+
+       Spec                                              Tests  Passing  Failing  Pending  Skipped  
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ ✖  regression.cy.ts                         00:13        4        1        3        -        - │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+    ✖  1 of 1 failed (100%)                     00:13        4        1        3        -        -  
+

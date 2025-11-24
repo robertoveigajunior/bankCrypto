@@ -14,6 +14,7 @@ import {
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import { fetchHistory } from '../services/api';
+import { usePortfolio } from '../context/PortfolioContext';
 
 ChartJS.register(
     CategoryScale,
@@ -38,6 +39,7 @@ interface PriceChartProps {
 }
 
 const PriceChart: React.FC<PriceChartProps> = ({ symbol = 'BTC', holdings = [], type = 'asset' }) => {
+    const { currency, rate } = usePortfolio();
     const [timeframe, setTimeframe] = useState<'1W' | '1M'>('1M'); // 1W or 1M
     const [chartData, setChartData] = useState<ChartData<'line'> | null>(null);
 
@@ -57,12 +59,15 @@ const PriceChart: React.FC<PriceChartProps> = ({ symbol = 'BTC', holdings = [], 
                         : date.toLocaleDateString();
                 });
 
+                // Helper to convert price based on currency
+                const convert = (val: number) => currency === 'BRL' ? val * rate : val;
+
                 if (type === 'portfolio') {
                     if (holdings.length === 0) {
                         setChartData({
                             labels,
                             datasets: [{
-                                label: 'Portfolio Value (USD)',
+                                label: `Portfolio Value (${currency})`,
                                 data: new Array(labels.length).fill(0),
                                 borderColor: '#00ff88',
                                 backgroundColor: 'rgba(0, 255, 136, 0.1)',
@@ -78,8 +83,6 @@ const PriceChart: React.FC<PriceChartProps> = ({ symbol = 'BTC', holdings = [], 
                     const histories = await Promise.all(historyPromises);
 
                     // Calculate total value for each timestamp
-                    // We assume histories are aligned by index (simplified for this demo)
-                    // A more robust solution would match by timestamp
                     const portfolioHistory = btcData.map((_, index) => {
                         let total = 0;
                         holdings.forEach(h => {
@@ -88,13 +91,13 @@ const PriceChart: React.FC<PriceChartProps> = ({ symbol = 'BTC', holdings = [], 
                                 total += history.data[index].price * parseFloat(h.quantity as string);
                             }
                         });
-                        return total;
+                        return convert(total);
                     });
 
                     setChartData({
                         labels,
                         datasets: [{
-                            label: 'Total Portfolio Value (USD)',
+                            label: `Total Portfolio Value (${currency})`,
                             data: portfolioHistory,
                             borderColor: '#00ff88',
                             backgroundColor: 'rgba(0, 255, 136, 0.1)',
@@ -113,8 +116,8 @@ const PriceChart: React.FC<PriceChartProps> = ({ symbol = 'BTC', holdings = [], 
 
                     const datasets = [
                         {
-                            label: 'BTC Price (USDT)',
-                            data: btcData.map(d => d.price),
+                            label: `BTC Price (${currency})`,
+                            data: btcData.map(d => convert(d.price)),
                             borderColor: '#00ff88',
                             backgroundColor: 'rgba(0, 255, 136, 0.1)',
                             tension: 0.4,
@@ -128,8 +131,8 @@ const PriceChart: React.FC<PriceChartProps> = ({ symbol = 'BTC', holdings = [], 
                             const colors = ['#0088ff', '#ff0088', '#ffff00', '#ff8800'];
                             const color = colors[index % colors.length];
                             return {
-                                label: `${item.symbol} Price (USDT)`,
-                                data: item.data.map(d => d.price),
+                                label: `${item.symbol} Price (${currency})`,
+                                data: item.data.map(d => convert(d.price)),
                                 borderColor: color,
                                 backgroundColor: 'transparent',
                                 tension: 0.4,
@@ -150,7 +153,7 @@ const PriceChart: React.FC<PriceChartProps> = ({ symbol = 'BTC', holdings = [], 
         };
 
         getData();
-    }, [holdings, timeframe, type, symbol]);
+    }, [holdings, timeframe, type, symbol, currency, rate]);
 
     useEffect(() => {
         const handleResize = () => {
@@ -179,6 +182,21 @@ const PriceChart: React.FC<PriceChartProps> = ({ symbol = 'BTC', holdings = [], 
                 bodyColor: '#ccc',
                 borderColor: '#333',
                 borderWidth: 1,
+                callbacks: {
+                    label: function (context) {
+                        let label = context.dataset.label || '';
+                        if (label) {
+                            label += ': ';
+                        }
+                        if (context.parsed.y !== null) {
+                            label += new Intl.NumberFormat(currency === 'BRL' ? 'pt-BR' : 'en-US', {
+                                style: 'currency',
+                                currency: currency
+                            }).format(context.parsed.y);
+                        }
+                        return label;
+                    }
+                }
             },
         },
         scales: {
@@ -191,14 +209,40 @@ const PriceChart: React.FC<PriceChartProps> = ({ symbol = 'BTC', holdings = [], 
                 display: true,
                 position: 'left',
                 grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                ticks: { color: '#00ff88', callback: (value) => '$' + value.toLocaleString() }
+                ticks: {
+                    color: '#00ff88',
+                    callback: (value) => {
+                        if (typeof value === 'number') {
+                            return new Intl.NumberFormat(currency === 'BRL' ? 'pt-BR' : 'en-US', {
+                                style: 'currency',
+                                currency: currency,
+                                notation: 'compact',
+                                maximumFractionDigits: 1
+                            }).format(value);
+                        }
+                        return value;
+                    }
+                }
             },
             y1: {
                 type: 'linear',
-                display: type === 'asset' && holdings.some(h => h.symbol !== 'BTC') ? true : false, // Only show secondary axis in asset mode with other assets
+                display: type === 'asset' && holdings.some(h => h.symbol !== 'BTC') ? true : false,
                 position: 'right',
                 grid: { drawOnChartArea: false },
-                ticks: { color: '#0088ff', callback: (value) => '$' + value.toLocaleString() }
+                ticks: {
+                    color: '#0088ff',
+                    callback: (value) => {
+                        if (typeof value === 'number') {
+                            return new Intl.NumberFormat(currency === 'BRL' ? 'pt-BR' : 'en-US', {
+                                style: 'currency',
+                                currency: currency,
+                                notation: 'compact',
+                                maximumFractionDigits: 1
+                            }).format(value);
+                        }
+                        return value;
+                    }
+                }
             }
         },
         interaction: {

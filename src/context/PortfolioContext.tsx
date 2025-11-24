@@ -12,6 +12,7 @@ interface PortfolioContextType {
     removeHolding: (symbol: string) => void;
     currency: string;
     setCurrency: (currency: string) => void;
+    rate: number;
 }
 
 const PortfolioContext = createContext<PortfolioContextType | undefined>(undefined);
@@ -60,8 +61,10 @@ export const PortfolioProvider: React.FC<PortfolioProviderProps> = ({ children }
         setHoldings(prev => prev.filter(h => h.symbol !== symbol));
     };
 
+    const USD_BRL_RATE = 5.80;
+
     return (
-        <PortfolioContext.Provider value={{ holdings, addHolding, updateHolding, removeHolding, currency, setCurrency }}>
+        <PortfolioContext.Provider value={{ holdings, addHolding, updateHolding, removeHolding, currency, setCurrency, rate: USD_BRL_RATE }}>
             {children}
         </PortfolioContext.Provider>
     );
