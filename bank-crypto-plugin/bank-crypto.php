@@ -44,7 +44,7 @@ function bank_crypto_enqueue_scripts() {
 function bank_crypto_shortcode() {
     // Enqueue scripts only when shortcode is used
     bank_crypto_enqueue_scripts();
-    return '<div id="bank-crypto-root" style="min-height: 600px; width: 100%; max-width: 100%; overflow-x: hidden;"></div>';
+    return '<div id="bank-crypto-root" class="bank-crypto-plugin-root" style="width: 100%; max-width: 100%; overflow-x: hidden; margin: 0; padding: 0;"></div>';
 }
 
 add_shortcode('bank_crypto_dashboard', 'bank_crypto_shortcode');
