@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bank Crypto Plugin Test</title>
+    <link rel="stylesheet" href="./bank-crypto-plugin/assets/index-C3fqkQ4M.css">
+    <style>
+        /* Simulate WordPress Admin Bar */
+        #wpadminbar {
+            height: 32px;
+            background: #23282d;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 99999;
+        }
+        /* Simulate Theme Styles that might conflict */
+        body {
+            background: #f1f1f1; /* Typical WP background */
+            font-family: 'Open Sans', sans-serif; /* Typical WP font */
+            margin: 0;
+            padding-top: 32px; /* Space for admin bar */
+        }
+        .site-header {
+            background: #fff;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+        .site-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fff;
+            min-height: 800px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .entry-content {
+            /* Where the shortcode usually lives */
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="wpadminbar"></div>
+    <header class="site-header">
+        <h1>My WordPress Site</h1>
+    </header>
+    <div class="site-content">
+        <h2>Crypto Dashboard Page</h2>
+        <p>This is some content before the plugin.</p>
+        
+        <div class="entry-content">
+            <!-- The Plugin Wrapper as defined in bank-crypto.php -->
+            <div id="bank-crypto-root" class="bank-crypto-plugin-root" style="width: 100%; max-width: 100%; overflow-x: hidden; margin: 0; padding: 0;"></div>
+        </div>
+
+        <p>This is some content after the plugin.</p>
+    </div>
+
+    <script src="./bank-crypto-plugin/assets/index-ntsmJxOr.js"></script>
+</body>
+</html>
