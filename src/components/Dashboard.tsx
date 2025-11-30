@@ -5,7 +5,7 @@ import { fetchPrice, fetch24hChange } from '../services/api';
 import { fetchNews, NewsItem } from '../services/newsService';
 import PriceChart from './PriceChart';
 import HoldingsForm from './HoldingsForm';
-import InvestmentChat from './InvestmentChat';
+
 
 const Dashboard: React.FC = () => {
     const { t } = useLanguage();
@@ -156,9 +156,7 @@ const Dashboard: React.FC = () => {
                     )}
                 </div>
 
-                <div className="chat-section">
-                    <InvestmentChat />
-                </div>
+
             </main>
         </div>
     );

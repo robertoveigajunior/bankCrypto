@@ -4,7 +4,9 @@ import { LanguageProvider } from './context/LanguageContext';
 import Dashboard from './components/Dashboard';
 import Navigation from './components/Navigation';
 import DCACalculator from './pages/DCACalculator';
+
 import InvestmentChat from './components/InvestmentChat';
+import FloatingChat from './components/FloatingChat';
 import './index.css';
 
 
@@ -26,6 +28,7 @@ function App() {
                                     <Route path="/chat" element={<InvestmentChat />} />
                                 </Routes>
                             </main>
+                            <FloatingChat />
                         </div>
                     </div>
                 </Router>
