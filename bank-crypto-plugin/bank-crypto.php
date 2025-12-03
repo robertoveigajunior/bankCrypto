@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Bank Crypto Dashboard
  * Description: A React-based Crypto Dashboard with Cyberpunk aesthetics. Use [bank_crypto_dashboard] shortcode to display.
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: Bank Crypto Team
  */
 
@@ -25,7 +25,7 @@ function bank_crypto_enqueue_scripts() {
             'bank-crypto-js',
             $plugin_dir_url . 'assets/' . $js_file,
             array(),
-            '1.0.0',
+            '1.0.1',
             true
         );
     }
@@ -36,7 +36,7 @@ function bank_crypto_enqueue_scripts() {
             'bank-crypto-css',
             $plugin_dir_url . 'assets/' . $css_file,
             array(),
-            '1.0.0'
+            '1.0.1'
         );
     }
 }
